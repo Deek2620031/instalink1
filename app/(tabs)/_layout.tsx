@@ -1,13 +1,7 @@
 import { Tabs } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { 
-  Home, 
-  Search, 
-  PlusSquare, 
-  MessageCircle, 
-  User
-} from 'lucide-react-native';
+import { Chrome as Home, Search, SquarePlus as PlusSquare, MessageCircle, User } from 'lucide-react-native';
 
 function TabBarIcon({ 
   Icon, 
