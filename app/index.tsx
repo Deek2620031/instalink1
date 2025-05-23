@@ -1,53 +1,29 @@
-import { useEffect } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import { ArrowRight } from 'lucide-react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 export default function Welcome() {
   const router = useRouter();
 
-  useEffect(() => {
-    // In a real app, we would check if the user is already logged in
-    // and redirect to the main app if they are
-  }, []);
-
-  const handleGetStarted = () => {
-    router.push('/auth');
+  const handleLogin = () => {
+    router.push('/onboarding');
   };
 
   return (
     <LinearGradient
-      colors={['#8A2BE2', '#4B0082', '#191970']}
+      colors={['#2D3250', '#424769', '#7077A1']}
       style={styles.container}
     >
       <View style={styles.content}>
         <Animated.View entering={FadeIn.delay(300).duration(1000)} style={styles.logoContainer}>
           <Text style={styles.logo}>InstaLink</Text>
+          <Text style={styles.tagline}>Connect. Create. Collaborate.</Text>
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(600).duration(1000)} style={styles.textContainer}>
-          <Text style={styles.title}>Network Like a Pro</Text>
-          <Text style={styles.subtitle}>
-            Connect with professionals, showcase your skills, and discover opportunities tailored for Gen Z
-          </Text>
-        </Animated.View>
-
-        <Animated.View entering={FadeInDown.delay(900).duration(1000)} style={styles.imageContainer}>
-          <Image
-            source={{ uri: 'https://images.pexels.com/photos/7148384/pexels-photo-7148384.jpeg' }}
-            style={styles.image}
-            resizeMode="cover"
-          />
-        </Animated.View>
-
-        <Animated.View entering={FadeInDown.delay(1200).duration(1000)} style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleGetStarted}>
-            <Text style={styles.buttonText}>Get Started</Text>
-            <ArrowRight size={20} color="#FFFFFF" />
-          </TouchableOpacity>
-        </Animated.View>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.loginButtonText}>Get Started</Text>
+        </TouchableOpacity>
       </View>
     </LinearGradient>
   );
@@ -61,64 +37,38 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 60,
+    paddingVertical: 100,
     paddingHorizontal: 24,
   },
   logoContainer: {
-    marginTop: 40,
+    alignItems: 'center',
   },
   logo: {
     fontFamily: 'Poppins-Bold',
-    fontSize: 42,
+    fontSize: 48,
     color: '#FFFFFF',
     letterSpacing: 1,
   },
-  textContainer: {
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  title: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: 28,
-    color: '#FFFFFF',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  subtitle: {
+  tagline: {
     fontFamily: 'Inter-Regular',
-    fontSize: 16,
+    fontSize: 18,
     color: 'rgba(255, 255, 255, 0.8)',
-    textAlign: 'center',
-    lineHeight: 24,
+    marginTop: 16,
   },
-  imageContainer: {
-    width: '100%',
-    height: 300,
-    borderRadius: 24,
-    overflow: 'hidden',
-    marginVertical: 40,
+  loginButton: {
+    backgroundColor: '#F6B17A',
+    paddingVertical: 16,
+    paddingHorizontal: 48,
+    borderRadius: 30,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  buttonContainer: {
-    width: '100%',
-    marginTop: 20,
-  },
-  button: {
-    flexDirection: 'row',
-    backgroundColor: '#FF3366',
-    paddingVertical: 18,
-    paddingHorizontal: 32,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: {
+  loginButtonText: {
     fontFamily: 'Inter-Bold',
     fontSize: 18,
-    color: '#FFFFFF',
-    marginRight: 8,
+    color: '#2D3250',
   },
 });

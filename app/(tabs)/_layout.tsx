@@ -1,13 +1,13 @@
 import { Tabs } from 'expo-router';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { 
   Home, 
   Search, 
   PlusSquare, 
-  MessageSquare, 
+  MessageCircle, 
   User
 } from 'lucide-react-native';
-import { BlurView } from 'expo-blur';
 
 function TabBarIcon({ 
   Icon, 
@@ -21,7 +21,10 @@ function TabBarIcon({
   focused: boolean;
 }) {
   return (
-    <View style={styles.iconContainer}>
+    <View style={[
+      styles.iconContainer,
+      focused && styles.focusedIcon
+    ]}>
       <Icon size={size} color={color} strokeWidth={focused ? 2.5 : 2} />
     </View>
   );
@@ -34,8 +37,8 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: styles.tabBar,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: '#8A2BE2',
-        tabBarInactiveTintColor: '#6B7280',
+        tabBarActiveTintColor: '#2D3250',
+        tabBarInactiveTintColor: '#7077A1',
         tabBarBackground: () => (
           <BlurView tint="light" intensity={80} style={StyleSheet.absoluteFill} />
         ),
@@ -72,7 +75,7 @@ export default function TabLayout() {
         name="messages"
         options={{
           title: 'Messages',
-          tabBarIcon: ({ color, focused }) => <TabBarIcon Icon={MessageSquare} color={color} focused={focused} />,
+          tabBarIcon: ({ color, focused }) => <TabBarIcon Icon={MessageCircle} color={color} focused={focused} />,
         }}
       />
       <Tabs.Screen
@@ -98,6 +101,11 @@ const styles = StyleSheet.create({
   iconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 8,
+    borderRadius: 12,
+  },
+  focusedIcon: {
+    backgroundColor: 'rgba(246, 177, 122, 0.2)',
   },
   createButtonContainer: {
     position: 'absolute',
@@ -106,13 +114,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   createButton: {
-    backgroundColor: '#8A2BE2',
+    backgroundColor: '#F6B17A',
     width: 56,
     height: 56,
-    borderRadius: 28,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#8A2BE2',
+    shadowColor: '#F6B17A',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
