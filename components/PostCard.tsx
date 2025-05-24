@@ -1,4 +1,5 @@
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput } from 'react-native';
 import { Heart, MessageCircle, Bookmark, Share2 } from 'lucide-react-native';
 
 type PostProps = {
@@ -17,6 +18,30 @@ type PostCardProps = {
 };
 
 export function PostCard({ post }: PostCardProps) {
+  const [isLiked, setIsLiked] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [likesCount, setLikesCount] = useState(post.likes);
+  const [showComments, setShowComments] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [comments, setComments] = useState(post.comments);
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
+  };
+
+  const handleSave = () => {
+    setIsSaved(!isSaved);
+  };
+
+  const handleComment = () => {
+    if (newComment.trim()) {
+      setComments(prev => prev + 1);
+      setNewComment('');
+      setShowComments(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -33,30 +58,65 @@ export function PostCard({ post }: PostCardProps) {
 
       <View style={styles.actionsContainer}>
         <View style={styles.leftActions}>
-          <TouchableOpacity style={styles.actionButton}>
-            <Heart size={24} color="#1F2937" />
+          <TouchableOpacity style={styles.actionButton} onPress={handleLike}>
+            <Heart 
+              size={24} 
+              color={isLiked ? '#FF3B30' : '#1B4D3E'} 
+              fill={isLiked ? '#FF3B30' : 'none'}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.actionButton} 
+            onPress={() => setShowComments(!showComments)}
+          >
+            <MessageCircle size={24} color="#1B4D3E" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton}>
-            <MessageCircle size={24} color="#1F2937" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <Share2 size={24} color="#1F2937" />
+            <Share2 size={24} color="#1B4D3E" />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.actionButton}>
-          <Bookmark size={24} color="#1F2937" />
+        <TouchableOpacity style={styles.actionButton} onPress={handleSave}>
+          <Bookmark 
+            size={24} 
+            color="#1B4D3E" 
+            fill={isSaved ? '#1B4D3E' : 'none'}
+          />
         </TouchableOpacity>
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.likes}>{post.likes.toLocaleString()} likes</Text>
+        <Text style={styles.likes}>{likesCount.toLocaleString()} likes</Text>
         <View style={styles.captionContainer}>
           <Text style={styles.captionUsername}>{post.username}</Text>
           <Text style={styles.caption}>{post.caption}</Text>
         </View>
-        <TouchableOpacity>
-          <Text style={styles.commentsLink}>View all {post.comments} comments</Text>
+        <TouchableOpacity onPress={() => setShowComments(!showComments)}>
+          <Text style={styles.commentsLink}>
+            View all {comments} comments
+          </Text>
         </TouchableOpacity>
+
+        {showComments && (
+          <View style={styles.commentInput}>
+            <TextInput
+              style={styles.input}
+              placeholder="Add a comment..."
+              value={newComment}
+              onChangeText={setNewComment}
+              multiline
+            />
+            <TouchableOpacity 
+              style={[
+                styles.postButton,
+                !newComment.trim() && styles.disabledButton
+              ]}
+              onPress={handleComment}
+              disabled={!newComment.trim()}
+            >
+              <Text style={styles.postButtonText}>Post</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -115,6 +175,7 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     marginRight: 16,
+    padding: 4,
   },
   content: {
     paddingHorizontal: 16,
@@ -146,5 +207,35 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 14,
     color: '#6B7280',
+  },
+  commentInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+  },
+  input: {
+    flex: 1,
+    fontFamily: 'Inter-Regular',
+    fontSize: 14,
+    color: '#1F2937',
+    paddingVertical: 8,
+    marginRight: 12,
+  },
+  postButton: {
+    backgroundColor: '#1B4D3E',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  postButtonText: {
+    fontFamily: 'Inter-Bold',
+    fontSize: 14,
+    color: '#FFFFFF',
   },
 });
