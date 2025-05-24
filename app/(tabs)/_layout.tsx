@@ -31,7 +31,7 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: styles.tabBar,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: '#2D3250',
+        tabBarActiveTintColor: '#1B4D3E',
         tabBarInactiveTintColor: '#7077A1',
         tabBarBackground: () => (
           <BlurView tint="light" intensity={80} style={StyleSheet.absoluteFill} />
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   focusedIcon: {
-    backgroundColor: 'rgba(246, 177, 122, 0.2)',
+    backgroundColor: 'rgba(27, 77, 62, 0.2)',
   },
   createButtonContainer: {
     position: 'absolute',
@@ -108,13 +108,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   createButton: {
-    backgroundColor: '#F6B17A',
+    backgroundColor: '#1B4D3E',
     width: 56,
     height: 56,
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#F6B17A',
+    shadowColor: '#1B4D3E',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

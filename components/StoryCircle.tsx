@@ -12,7 +12,7 @@ export function StoryCircle({ imageUrl, username, hasStory = false }: StoryCircl
     <TouchableOpacity style={styles.container}>
       {hasStory ? (
         <LinearGradient
-          colors={['#FF3366', '#8A2BE2', '#4B0082']}
+          colors={['#FFD700', '#FFA500', '#FF8C00']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.storyRing}

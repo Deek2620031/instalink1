@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInRight, FadeOutLeft } from 'react-native-reanimated';
-import { Users, Brain, Briefcase, Heart, Sparkles } from 'lucide-react-native';
+import { Users, Brain, Briefcase, Heart, Sparkles, Moon, Coffee } from 'lucide-react-native';
 
 const PURPOSE_OPTIONS = [
   { id: 'help', label: 'Seek Professional Help', icon: Heart },
@@ -58,22 +58,68 @@ const PERSONALITY_QUESTIONS = [
   }
 ];
 
+const PERSONAL_DETAILS = [
+  { id: 'age', label: 'Age', type: 'number' },
+  { id: 'profession', label: 'Profession', type: 'text' },
+];
+
+const SLEEP_CYCLE = [
+  'Before 10 PM',
+  '10 PM - 12 AM',
+  '12 AM - 2 AM',
+  'After 2 AM'
+];
+
+const MEAL_FREQUENCY = [
+  '1-2 meals per day',
+  '3 meals per day',
+  '4-5 meals per day',
+  'More than 5 meals per day'
+];
+
 export default function Onboarding() {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedPurpose, setSelectedPurpose] = useState('');
   const [answers, setAnswers] = useState<string[]>([]);
+  const [personalDetails, setPersonalDetails] = useState({
+    age: '',
+    profession: '',
+    sleepCycle: '',
+    mealFrequency: '',
+  });
   const router = useRouter();
 
   const handleNext = () => {
     if (currentStep === 0 && !selectedPurpose) {
-      return; // Don't proceed without purpose selection
+      return;
     }
 
-    if (currentStep < PERSONALITY_QUESTIONS.length) {
-      setCurrentStep(currentStep + 1);
+    if (selectedPurpose === 'help') {
+      if (currentStep < PERSONALITY_QUESTIONS.length + 3) { // +3 for personal details, sleep, and meal
+        setCurrentStep(currentStep + 1);
+      } else {
+        router.push('/auth');
+      }
     } else {
-      // Analysis complete, proceed to auth
       router.push('/auth');
+    }
+  };
+
+  const renderContent = () => {
+    if (currentStep === 0) {
+      return renderPurposeSelection();
+    }
+
+    if (selectedPurpose === 'help') {
+      if (currentStep <= PERSONALITY_QUESTIONS.length) {
+        return renderPersonalityQuestion();
+      } else if (currentStep === PERSONALITY_QUESTIONS.length + 1) {
+        return renderPersonalDetails();
+      } else if (currentStep === PERSONALITY_QUESTIONS.length + 2) {
+        return renderSleepCycle();
+      } else {
+        return renderMealFrequency();
+      }
     }
   };
 
@@ -91,7 +137,7 @@ export default function Onboarding() {
         >
           <option.icon
             size={24}
-            color={selectedPurpose === option.id ? '#FFFFFF' : '#2D3250'}
+            color={selectedPurpose === option.id ? '#FFFFFF' : '#1B4D3E'}
           />
           <Text
             style={[
@@ -110,7 +156,7 @@ export default function Onboarding() {
     const question = PERSONALITY_QUESTIONS[currentStep - 1];
     return (
       <View style={styles.questionContainer}>
-        <Brain size={48} color="#2D3250" style={styles.questionIcon} />
+        <Brain size={48} color="#1B4D3E" style={styles.questionIcon} />
         <Text style={styles.question}>{question.question}</Text>
         <View style={styles.optionsContainer}>
           {question.options.map((option, index) => (
@@ -141,6 +187,84 @@ export default function Onboarding() {
     );
   };
 
+  const renderPersonalDetails = () => (
+    <View style={styles.detailsContainer}>
+      <Text style={styles.question}>Tell us about yourself</Text>
+      {PERSONAL_DETAILS.map((detail) => (
+        <View key={detail.id} style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>{detail.label}</Text>
+          <TextInput
+            style={styles.input}
+            value={personalDetails[detail.id]}
+            onChangeText={(text) => setPersonalDetails({ ...personalDetails, [detail.id]: text })}
+            keyboardType={detail.type === 'number' ? 'numeric' : 'default'}
+            placeholder={`Enter your ${detail.label.toLowerCase()}`}
+          />
+        </View>
+      ))}
+    </View>
+  );
+
+  const renderSleepCycle = () => (
+    <View style={styles.questionContainer}>
+      <Moon size={48} color="#1B4D3E" style={styles.questionIcon} />
+      <Text style={styles.question}>What's your typical bedtime?</Text>
+      <View style={styles.optionsContainer}>
+        {SLEEP_CYCLE.map((time, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.option,
+              personalDetails.sleepCycle === time && styles.selectedOption
+            ]}
+            onPress={() => setPersonalDetails({ ...personalDetails, sleepCycle: time })}
+          >
+            <Text
+              style={[
+                styles.optionText,
+                personalDetails.sleepCycle === time && styles.selectedOptionText
+              ]}
+            >
+              {time}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+
+  const renderMealFrequency = () => (
+    <View style={styles.questionContainer}>
+      <Coffee size={48} color="#1B4D3E" style={styles.questionIcon} />
+      <Text style={styles.question}>How many meals do you typically have per day?</Text>
+      <View style={styles.optionsContainer}>
+        {MEAL_FREQUENCY.map((frequency, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.option,
+              personalDetails.mealFrequency === frequency && styles.selectedOption
+            ]}
+            onPress={() => setPersonalDetails({ ...personalDetails, mealFrequency: frequency })}
+          >
+            <Text
+              style={[
+                styles.optionText,
+                personalDetails.mealFrequency === frequency && styles.selectedOptionText
+              ]}
+            >
+              {frequency}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+
+  const totalSteps = selectedPurpose === 'help' 
+    ? PERSONALITY_QUESTIONS.length + 3 
+    : 1;
+
   return (
     <View style={styles.container}>
       <ScrollView 
@@ -153,7 +277,7 @@ export default function Onboarding() {
           exiting={FadeOutLeft}
           style={styles.content}
         >
-          {currentStep === 0 ? renderPurposeSelection() : renderPersonalityQuestion()}
+          {renderContent()}
         </Animated.View>
       </ScrollView>
 
@@ -164,13 +288,13 @@ export default function Onboarding() {
               style={[
                 styles.progressFill,
                 {
-                  width: `${((currentStep + 1) / (PERSONALITY_QUESTIONS.length + 1)) * 100}%`,
+                  width: `${((currentStep + 1) / totalSteps) * 100}%`,
                 },
               ]}
             />
           </View>
           <Text style={styles.progressText}>
-            {currentStep + 1} of {PERSONALITY_QUESTIONS.length + 1}
+            {currentStep + 1} of {totalSteps}
           </Text>
         </View>
 
@@ -183,7 +307,7 @@ export default function Onboarding() {
           disabled={currentStep === 0 && !selectedPurpose}
         >
           <Text style={styles.buttonText}>
-            {currentStep === PERSONALITY_QUESTIONS.length ? 'Complete' : 'Next'}
+            {currentStep === totalSteps - 1 ? 'Complete' : 'Next'}
           </Text>
           <Sparkles size={20} color="#FFFFFF" style={styles.buttonIcon} />
         </TouchableOpacity>
@@ -216,13 +340,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  detailsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
   questionIcon: {
     marginBottom: 24,
   },
   question: {
     fontFamily: 'Poppins-SemiBold',
     fontSize: 24,
-    color: '#2D3250',
+    color: '#1B4D3E',
     textAlign: 'center',
     marginBottom: 32,
   },
@@ -235,12 +363,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   selectedPurpose: {
-    backgroundColor: '#2D3250',
+    backgroundColor: '#1B4D3E',
   },
   purposeText: {
     fontFamily: 'Inter-Medium',
     fontSize: 16,
-    color: '#2D3250',
+    color: '#1B4D3E',
     marginLeft: 16,
   },
   selectedPurposeText: {
@@ -256,16 +384,33 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   selectedOption: {
-    backgroundColor: '#2D3250',
+    backgroundColor: '#1B4D3E',
   },
   optionText: {
     fontFamily: 'Inter-Medium',
     fontSize: 16,
-    color: '#2D3250',
+    color: '#1B4D3E',
     textAlign: 'center',
   },
   selectedOptionText: {
     color: '#FFFFFF',
+  },
+  inputContainer: {
+    marginBottom: 24,
+  },
+  inputLabel: {
+    fontFamily: 'Inter-Medium',
+    fontSize: 16,
+    color: '#1B4D3E',
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: '#F3F4F6',
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    color: '#1B4D3E',
   },
   footer: {
     padding: 24,
@@ -284,7 +429,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#2D3250',
+    backgroundColor: '#1B4D3E',
     borderRadius: 2,
   },
   progressText: {
@@ -294,7 +439,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   button: {
-    backgroundColor: '#2D3250',
+    backgroundColor: '#1B4D3E',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
